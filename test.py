@@ -3,11 +3,11 @@
 import os
 from pathlib import Path
 import unittest
+from .config import get_config, CONFIG
 from .main import (
     Fetcher,
     Extractor,
-    Creator,
-    IMG_DIR
+    Creator
 )
 
 
@@ -17,6 +17,8 @@ class TestAll(unittest.TestCase):
         self.fetcher = Fetcher()
         self.extractor = Extractor()
         self.creator = Creator()
+        self.config = get_config(CONFIG)
+        self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
 
     def fetch_comics_dict(self):
         page = self.fetcher.fetch_comic_list_page()
@@ -66,7 +68,7 @@ class TestAll(unittest.TestCase):
         images_list = self.extractor.extract_images_list(subpage)
         local_path = './comics/test/'
         self.fetcher.download_images_list(local_path, images_list)
-        completed_files = next(os.walk(str(Path(local_path, IMG_DIR))))[2] #os.listdir
+        completed_files = next(os.walk(str(Path(local_path, self.img_dir))))[2] #os.listdir
         self.assertGreaterEqual(len(completed_files), len(images_list))
 
     def test_assemble_and_create_html_file(self):

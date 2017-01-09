@@ -1,34 +1,18 @@
 # -*- coding:utf-8 -*-
 
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, wait
+from pathlib import Path
 import os
 from urllib.parse import urlparse
 
 import requests
 from lxml import html
 from PyQt5.QtCore import QPoint
-from PyQt5.QtPrintSupport import QPrinter
-from PyQt5.QtGui import QTextDocument, QImage, QPdfWriter, QPainter, QPageSize, QPagedPaintDevice
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QImage, QPdfWriter, QPainter, QPagedPaintDevice
 
+from .config import get_config, CONFIG, HTML_TEMPLATE
 
-COMICS_LIST = {'default': 'http://www.readcomics.tv/comic-list'}
-COMICS_LIST_XPATH = {'default': '//div[@class="serie-box"]/ul/li/a'}
-COMICS_SUBPAGE_XPATH = {'default': '//ul[@class="basic-list"]/li/a'}
-COMICS_IMAGES_XPATH = {'default': '//div[@class="chapter-container"]/img/@src'}
-IMG_DIR = 'img'
 CWD = Path.cwd()
-
-HTML_TEMPLATE = '''
-<!doctype html>
-<html lang="en">
-<head></head>
-<body>
-  <div>{}</div>
-</body>
-</html>
-'''
 
 
 def name_fits(search_phrase, key):
@@ -36,10 +20,17 @@ def name_fits(search_phrase, key):
         return search_phrase.lower() in key.lower()
 
 
-class Fetcher:
+class Base:
+
+    def __init__(self):
+        self.config = get_config(CONFIG)
+        self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
+
+
+class Fetcher(Base):
 
     def fetch_comic_list_page(self, service='default'):
-        return requests.get(COMICS_LIST[service])
+        return requests.get(self.config['COMICS_LIST'].get(service))
 
     def fetch_subpage(self, url):
         return requests.get(url)
@@ -50,7 +41,12 @@ class Fetcher:
 
     def download_image(self, url, local_path, name):
         img = requests.get(url)
-        download_path = Path(Path.cwd(), local_path, IMG_DIR, name)
+        download_path = Path(
+            Path.cwd(),
+            local_path,
+            self.img_dir,
+            name
+        )
         with download_path.open('wb') as f:
             f.write(img.content)
             return download_path
@@ -66,22 +62,22 @@ class Fetcher:
         wait(futures)
 
 
-class Extractor:
+class Extractor(Base):
 
     def extract_comic_links(self, page, service='default'):
         tree = html.fromstring(page.content)
-        return tree.xpath(COMICS_LIST_XPATH[service])
+        return tree.xpath(self.config['COMICS_LIST_XPATH'].get(service))
 
     def extract_issues_list(self, page, service='default'):
         tree = html.fromstring(page.content)
-        return tree.xpath(COMICS_SUBPAGE_XPATH[service])
+        return tree.xpath(self.config['COMICS_SUBPAGE_XPATH'].get(service))
 
     def extract_images_list(self, page, service='default'):
         tree = html.fromstring(page.content)
-        return tree.xpath(COMICS_IMAGES_XPATH[service])
+        return tree.xpath(self.config['COMICS_IMAGES_XPATH'].get(service))
 
 
-class Creator:
+class Creator(Base):
 
     def make_comics_dict(self, hrefs):
         return {item.text: item.attrib.get('href') for item in hrefs}
@@ -90,14 +86,14 @@ class Creator:
         return {key: value for key, value in comics_dict.items() if name_fits(search_phrase, key)}
 
     def make_comic_html(self, local_path):
-        files = next(os.walk(str(Path(local_path, IMG_DIR))))[2]
-        images_html = ''.join(['<img src="{}"/>'.format(str(Path(CWD, local_path, IMG_DIR, file)))
+        files = next(os.walk(str(Path(local_path, self.img_dir))))[2]
+        images_html = ''.join(['<img src="{}"/>'.format(str(Path(CWD, local_path, self.img_dir, file)))
                                for file in sorted(files, key=lambda x: int(x.split('.')[0]))])
         return HTML_TEMPLATE.format(images_html)
 
     def make_comic_images_paths_list(self, local_path):
-        files = next(os.walk(str(Path(local_path, IMG_DIR))))[2]
-        images_paths_list = [str(Path(CWD, local_path, IMG_DIR, file))
+        files = next(os.walk(str(Path(local_path, self.img_dir))))[2]
+        images_paths_list = [str(Path(CWD, local_path, self.img_dir, file))
                        for file in sorted(files, key=lambda x: int(x.split('.')[0]))]
         return images_paths_list
 
@@ -122,3 +118,55 @@ class Creator:
             pdf_writer.newPage()
 
         pdf_writer.deleteLater()
+
+    def make_cbr_from_images_list(self):
+        #http://www.makeuseof.com/tag/create-cbrcbz-files-distribute-comic-strip-graphic/
+        pass
+
+    def compress_images(self):
+        #TODO: to chyba cos dla rusta
+        pass
+
+
+class CreatorPdf(Creator):
+    pass
+
+
+class CreatorHtml(Creator):
+    pass
+
+
+class CreatorCbr(Creator):
+    pass
+
+
+class ComicThief:
+
+    def __init__(self):
+        self.fetcher = Fetcher()
+        self.extractor = Extractor()
+        self.creator = Creator()
+        self.config = get_config(CONFIG)
+        self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
+
+    def fetch_comics_dict(self):
+        page = self.fetcher.fetch_comic_list_page()
+        return self.creator.make_comics_dict(self.extractor.extract_comic_links(page))
+
+    def get_first_result(self, results):
+        return sorted(results.items())[0][1]
+
+    def search(self, keyword):
+        comics_dict = self.fetch_comics_dict()
+        results = self.creator.search_comics_dict(keyword, comics_dict)
+        results_len = len(results)
+        if results_len == 1:
+            print('od razu pokazulemy subpage i epizody')
+            subpage = self.fetcher.fetch_subpage(self.get_first_result(results))
+            comics_dict = self.creator.make_comics_dict(self.extractor.extract_issues_list(subpage))
+            print(comics_dict)
+        elif results > 1:
+            print('pokazujemy liste do sprecyzowania')
+            print(results)
+        else:
+            print('Found nothing.')

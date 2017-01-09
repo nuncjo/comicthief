@@ -5,3 +5,5 @@
 #TODO 3 - klasy deklaratywne byc moze, getattr i setattr etc.
 #TODO 3 - polaczenei z rust ? :P
 #TODO: na teardown usuwac zawartosc katalogu testowego..
+#format string z pythona 3.6 :)
+#udostepnic ludkom ? :)
