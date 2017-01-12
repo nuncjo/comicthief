@@ -2,10 +2,11 @@
 
 import sys
 from argparse import ArgumentParser
-from .main import ComicThief
+from main import ComicThief
 
 OPTIONS = [
     (('-s', '--search'), {'help': 'search'}),
+    (('-xs', '--xsearch'), {'help': 'exact search to narrow more than one result'}),
     (('-d', '--download'), {'help': 'download'}),
     (('-e', '--episode'),  {'help': 'choose episode', 'type': int}),
     (('-o', '--output'), {'help': 'output format html. pdf, cbr'}),
@@ -28,7 +29,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.search:
         print('searching')
-        ct.search(args.search)
+        results = ct.search(args.search)
+    elif args.xsearch:
+        result = ct.exact_search(args.xsearch)
     elif args.download:
         print('downloading')
         if args.output:

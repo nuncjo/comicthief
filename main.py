@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from concurrent.futures import ThreadPoolExecutor, wait
+from collections import namedtuple
 from pathlib import Path
 import os
 from urllib.parse import urlparse
@@ -10,7 +11,7 @@ from lxml import html
 from PyQt5.QtCore import QPoint
 from PyQt5.QtGui import QImage, QPdfWriter, QPainter, QPagedPaintDevice
 
-from .config import get_config, CONFIG, HTML_TEMPLATE
+from config import get_config, CONFIG, HTML_TEMPLATE
 
 CWD = Path.cwd()
 
@@ -52,7 +53,7 @@ class Fetcher(Base):
             return download_path
 
     def download_images_list(self, local_path, images_list, threads=2):
-        # TODO: dekorator with threadpol oraz timeit
+        # TODO: dekorator with threadpol oraz timeit lub uzyc async, w koncu to python 3.6
         pool = ThreadPoolExecutor(threads)
         futures = []
         for order, image_url in enumerate(images_list):
@@ -70,7 +71,8 @@ class Extractor(Base):
 
     def extract_issues_list(self, page, service='default'):
         tree = html.fromstring(page.content)
-        return tree.xpath(self.config['COMICS_SUBPAGE_XPATH'].get(service))
+        x = tree.xpath(self.config['COMICS_SUBPAGE_XPATH'].get(service))
+        return x
 
     def extract_images_list(self, page, service='default'):
         tree = html.fromstring(page.content)
@@ -84,6 +86,9 @@ class Creator(Base):
 
     def search_comics_dict(self, search_phrase, comics_dict):
         return {key: value for key, value in comics_dict.items() if name_fits(search_phrase, key)}
+
+    def exact_search_comics_dict(self, search_phrase, comics_dict):
+        return {key: value for key, value in comics_dict.items() if search_phrase == key}
 
     def make_comic_html(self, local_path):
         files = next(os.walk(str(Path(local_path, self.img_dir))))[2]
@@ -156,17 +161,39 @@ class ComicThief:
     def get_first_result(self, results):
         return sorted(results.items())[0][1]
 
-    def search(self, keyword):
+    def find_results(self, keyword, exact=False):
+        Results = namedtuple('Results', 'results_dict results_len')
         comics_dict = self.fetch_comics_dict()
-        results = self.creator.search_comics_dict(keyword, comics_dict)
-        results_len = len(results)
-        if results_len == 1:
-            print('od razu pokazulemy subpage i epizody')
-            subpage = self.fetcher.fetch_subpage(self.get_first_result(results))
-            comics_dict = self.creator.make_comics_dict(self.extractor.extract_issues_list(subpage))
-            print(comics_dict)
-        elif results > 1:
-            print('pokazujemy liste do sprecyzowania')
-            print(results)
+        if exact:
+            results = self.creator.exact_search_comics_dict(keyword, comics_dict)
+        else:
+            results = self.creator.search_comics_dict(keyword, comics_dict)
+        return Results(results, len(results))
+
+    def search(self, keyword):
+        found = self.find_results(keyword)
+        if found.results_len == 1:
+            subpage = self.fetcher.fetch_subpage(self.get_first_result(found.results_dict))
+            episodes = self.creator.make_comics_dict(self.extractor.extract_issues_list(subpage))
+            print('\n'.join(episodes.keys()))
+            return episodes
+        elif found.results_len > 1:
+            print('Found more than one result. Choose one of the results and use -xs <name>')
+            print(found.results_dict)
+            return found.results_dict
         else:
             print('Found nothing.')
+
+    def exact_search(self, keyword):
+        found = self.find_results(keyword, exact=True)
+        if found.results_len == 1:
+            print('You should specify one of the episodes.')
+            subpage = self.fetcher.fetch_subpage(self.get_first_result(found.results_dict))
+            episodes = self.creator.make_comics_dict(self.extractor.extract_issues_list(subpage))
+            print('\n'.join(episodes.keys()))
+            return episodes
+        else:
+            print('Found nothing, .')
+
+#ct = ComicThief()
+#result = ct.search('Lobo')
