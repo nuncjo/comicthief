@@ -5,6 +5,7 @@ from collections import namedtuple
 from pathlib import Path
 import os
 from urllib.parse import urlparse
+from zipfile import ZipFile
 
 import requests
 from lxml import html
@@ -41,25 +42,24 @@ class Fetcher(Base):
         return "{}.{}".format(str(order), file_name.split('.')[1])
 
     def download_image(self, url, local_path, name):
-        img = requests.get(url)
         download_path = Path(
-            Path.cwd(),
             local_path,
-            self.img_dir,
             name
         )
         with download_path.open('wb') as f:
-            f.write(img.content)
+            f.write(requests.get(url).content)
             return download_path
 
     def download_images_list(self, local_path, images_list, threads=2):
         # TODO: dekorator with threadpol oraz timeit lub uzyc async, w koncu to python 3.6
+        local_path.mkdir(parents=True, exist_ok=True)
+        local_path_str = str(local_path)
         pool = ThreadPoolExecutor(threads)
         futures = []
         for order, image_url in enumerate(images_list):
             remote_path = urlparse(image_url).path
             file_name = self.prepare_ordered_filename(remote_path, order)
-            futures.append(pool.submit(self.download_image, image_url, local_path, file_name))
+            futures.append(pool.submit(self.download_image, image_url, local_path_str, file_name))
         wait(futures)
 
 
@@ -80,6 +80,9 @@ class Extractor(Base):
 
 
 class Creator(Base):
+
+    def create(self):
+        raise NotImplementedError
 
     def make_comics_dict(self, hrefs):
         return {item.text: item.attrib.get('href') for item in hrefs}
@@ -138,11 +141,20 @@ class CreatorPdf(Creator):
 
 
 class CreatorHtml(Creator):
-    pass
+
+    def create(self):
+        pass
 
 
-class CreatorCbr(Creator):
-    pass
+class CreatorCbz(Creator):
+
+    def zip_directory(self, path, img_dir, name):
+        with ZipFile(str(Path(path, "{}.cbz".format(name))), 'w') as zip_file:
+            for file in os.listdir(str(Path(path, img_dir))):
+                zip_file.write(Path(path, img_dir, file))
+
+    def create(self, path, img_dir, name):
+        self.zip_directory(path, img_dir, name)
 
 
 class ComicThief:
@@ -150,9 +162,10 @@ class ComicThief:
     def __init__(self):
         self.fetcher = Fetcher()
         self.extractor = Extractor()
-        self.creator = Creator()
+        self.creator = CreatorCbz()
         self.config = get_config(CONFIG)
         self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
+        self.output_dir = self.config['SETTINGS'].get('output_dir', 'comics')
 
     def fetch_comics_dict(self):
         page = self.fetcher.fetch_comic_list_page()
@@ -193,7 +206,14 @@ class ComicThief:
             print('\n'.join(episodes.keys()))
             return episodes
         else:
-            print('Found nothing, .')
+            print('Found nothing.')
+
+    def download_episode(self, episode_url, name):
+        subpage = self.fetcher.fetch_subpage(episode_url + '/full')
+        images_list = self.extractor.extract_images_list(subpage)
+        self.fetcher.download_images_list(Path(CWD, self.output_dir, name, self.img_dir), images_list)
+        self.creator.create(str(Path(CWD, self.output_dir, name)), self.img_dir, name)
+        print('Episode downloaded.')
 
 #ct = ComicThief()
 #result = ct.search('Lobo')

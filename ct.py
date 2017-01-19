@@ -8,7 +8,7 @@ OPTIONS = [
     (('-s', '--search'), {'help': 'search'}),
     (('-xs', '--xsearch'), {'help': 'exact search to narrow more than one result'}),
     (('-d', '--download'), {'help': 'download'}),
-    (('-e', '--episode'),  {'help': 'choose episode', 'type': int}),
+    (('-e', '--episode'),  {'help': 'choose episode', 'type': str}),
     (('-o', '--output'), {'help': 'output format html. pdf, cbr'}),
 ]
 
@@ -30,13 +30,21 @@ if __name__ == '__main__':
     if args.search:
         print('searching')
         results = ct.search(args.search)
+        if args.episode:
+            pass
     elif args.xsearch:
         result = ct.exact_search(args.xsearch)
-    elif args.download:
-        print('downloading')
-        if args.output:
-            print("outputing")
         if args.episode:
-            print("outputing")
+            episode_url = result.get(args.episode)
+            if episode_url:
+                print(episode_url)
+                ct.download_episode(episode_url, args.episode)
+
+    # elif args.download:
+    #     print('downloading')
+    #     if args.output:
+    #         print("outputing")
+    #     if args.episode:
+    #         print("outputing")
 
     print(sys.argv)
