@@ -7,25 +7,26 @@ from .config import get_config, CONFIG
 from .main import (
     Fetcher,
     Extractor,
-    Creator
+    CreatorCbz,
+    ComicThief,
 )
 
 
 class TestAll(unittest.TestCase):
 
     def setUp(self):
-        self.fetcher = Fetcher()
-        self.extractor = Extractor()
-        self.creator = Creator()
         self.config = get_config(CONFIG)
         self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
+        self.tests_output_dir = self.config['SETTINGS'].get('tests_output_dir', 'tests')
+        self.fetcher = Fetcher()
+        self.extractor = Extractor()
+        self.creator = CreatorCbz()
+        self.cwd = Path(Path.cwd(), self.tests_output_dir)
+        self.ct = ComicThief(root_path=self.cwd)
 
     def fetch_comics_dict(self):
         page = self.fetcher.fetch_comic_list_page()
         return self.creator.make_comics_dict(self.extractor.extract_comic_links(page))
-
-    def get_first_result(self, results):
-        return sorted(results.items())[0][1]
 
     def test_fetch_default_comic_list_page(self):
         page = self.fetcher.fetch_comic_list_page()
@@ -42,7 +43,7 @@ class TestAll(unittest.TestCase):
     def test_search_and_fetch_subcontent(self):
         comics_dict = self.fetch_comics_dict()
         lobo_results = self.creator.search_comics_dict('Lobo', comics_dict)
-        subpage = self.fetcher.fetch_subpage(self.get_first_result(lobo_results))
+        subpage = self.fetcher.fetch_subpage(self.ct.get_first_result(lobo_results))
         self.assertEqual(subpage.status_code, 200)
         comics_dict = self.creator.make_comics_dict(self.extractor.extract_issues_list(subpage))
         self.assertTrue(bool(comics_dict))
@@ -63,26 +64,25 @@ class TestAll(unittest.TestCase):
         os.remove(str(file_path))
 
     def test_download_images_list(self):
-        subpage_url = "http://www.readcomics.tv/lobo/chapter-1/full"
-        subpage = self.fetcher.fetch_subpage(subpage_url)
+        episode_url = "http://www.readcomics.tv/lobo/chapter-4/full"
+        subpage = self.fetcher.fetch_subpage(episode_url)
         images_list = self.extractor.extract_images_list(subpage)
-        local_path = './comics/test/'
-        self.fetcher.download_images_list(local_path, images_list)
-        completed_files = next(os.walk(str(Path(local_path, self.img_dir))))[2] #os.listdir
+        self.fetcher.download_images_list(Path(self.cwd, "Lobo #4", self.img_dir), images_list)
+        completed_files = os.listdir(str(Path(self.cwd, "Lobo #4", self.img_dir)))
+        self.assertTrue(Path(self.cwd, "Lobo #4", self.img_dir).exists())
         self.assertGreaterEqual(len(completed_files), len(images_list))
 
-    def test_assemble_and_create_html_file(self):
-        local_path = './comics/test/'
-        file_name = 'test.html'
-        self.creator.create_comic_html_file(local_path, file_name)
-        self.assertTrue(Path(local_path, file_name).exists())
+    def test_create_cbz_file(self):
+        result = self.ct.exact_search('Lobo')
+        episode_url = result.get("Lobo #5")
+        if episode_url:
+            self.ct.download_episode(episode_url, "Lobo #5")
+            tu skonczylem dokonczyc ten test oraz przerobic reszte
+        self.assertTrue(Path(self.cwd, self.img_dir, "Lobo #5.cbz").exists())
 
-    def test_make_pdf_from_list(self):
-        local_path = './comics/test/'
-        file_name = 'test.pdf'
-        images_paths_list = self.creator.make_comic_images_paths_list(local_path)
-        self.creator.make_pdf_from_images_list(images_paths_list, local_path, file_name)
-        self.assertTrue(Path(local_path, file_name).exists())
+    def tearDown(self):
+        #TODO:usuwanie self.tests_output_dir
+        pass
 
 
 if __name__ == '__main__':

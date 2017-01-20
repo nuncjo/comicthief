@@ -9,12 +9,8 @@ from zipfile import ZipFile
 
 import requests
 from lxml import html
-from PyQt5.QtCore import QPoint
-from PyQt5.QtGui import QImage, QPdfWriter, QPainter, QPagedPaintDevice
 
 from config import get_config, CONFIG, HTML_TEMPLATE
-
-CWD = Path.cwd()
 
 
 def name_fits(search_phrase, key):
@@ -93,58 +89,6 @@ class Creator(Base):
     def exact_search_comics_dict(self, search_phrase, comics_dict):
         return {key: value for key, value in comics_dict.items() if search_phrase == key}
 
-    def make_comic_html(self, local_path):
-        files = next(os.walk(str(Path(local_path, self.img_dir))))[2]
-        images_html = ''.join(['<img src="{}"/>'.format(str(Path(CWD, local_path, self.img_dir, file)))
-                               for file in sorted(files, key=lambda x: int(x.split('.')[0]))])
-        return HTML_TEMPLATE.format(images_html)
-
-    def make_comic_images_paths_list(self, local_path):
-        files = next(os.walk(str(Path(local_path, self.img_dir))))[2]
-        images_paths_list = [str(Path(CWD, local_path, self.img_dir, file))
-                       for file in sorted(files, key=lambda x: int(x.split('.')[0]))]
-        return images_paths_list
-
-    def create_comic_html_file(self, local_path, name):
-        with Path(Path.cwd(), local_path, name).open('w') as f:
-            f.write(self.make_comic_html(local_path))
-
-    def create_comic_pdf_file(self, local_path, name):
-        with Path(Path.cwd()).joinpath(local_path, name).open('w') as f:
-            f.write(self.make_comic_html(local_path))
-
-    def make_pdf_from_images_list(self, path_list, local_path, name):
-        image_coords = QPoint(0, 0)
-        pdf_writer = QPdfWriter(str(Path(Path.cwd(), local_path, name)))
-        pdf_writer.setPageSize(QPagedPaintDevice.A4)
-        pdf_writer.setResolution(215)
-        painter = QPainter(pdf_writer)
-
-        for img_path in path_list:
-            image = QImage(img_path)
-            painter.drawImage(image_coords, image.scaledToWidth(1600))
-            pdf_writer.newPage()
-
-        pdf_writer.deleteLater()
-
-    def make_cbr_from_images_list(self):
-        #http://www.makeuseof.com/tag/create-cbrcbz-files-distribute-comic-strip-graphic/
-        pass
-
-    def compress_images(self):
-        #TODO: to chyba cos dla rusta
-        pass
-
-
-class CreatorPdf(Creator):
-    pass
-
-
-class CreatorHtml(Creator):
-
-    def create(self):
-        pass
-
 
 class CreatorCbz(Creator):
 
@@ -159,13 +103,14 @@ class CreatorCbz(Creator):
 
 class ComicThief:
 
-    def __init__(self):
+    def __init__(self, root_path=None):
         self.fetcher = Fetcher()
         self.extractor = Extractor()
         self.creator = CreatorCbz()
         self.config = get_config(CONFIG)
         self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
         self.output_dir = self.config['SETTINGS'].get('output_dir', 'comics')
+        self.cwd = root_path or Path.cwd()
 
     def fetch_comics_dict(self):
         page = self.fetcher.fetch_comic_list_page()
@@ -211,8 +156,8 @@ class ComicThief:
     def download_episode(self, episode_url, name):
         subpage = self.fetcher.fetch_subpage(episode_url + '/full')
         images_list = self.extractor.extract_images_list(subpage)
-        self.fetcher.download_images_list(Path(CWD, self.output_dir, name, self.img_dir), images_list)
-        self.creator.create(str(Path(CWD, self.output_dir, name)), self.img_dir, name)
+        self.fetcher.download_images_list(Path(self.cwd, self.output_dir, name, self.img_dir), images_list)
+        self.creator.create(str(Path(self.cwd, self.output_dir, name)), self.img_dir, name)
         print('Episode downloaded.')
 
 #ct = ComicThief()
