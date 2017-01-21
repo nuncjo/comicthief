@@ -49,13 +49,12 @@ class Fetcher(Base):
     def download_images_list(self, local_path, images_list, threads=2):
         # TODO: dekorator with threadpol oraz timeit lub uzyc async, w koncu to python 3.6
         local_path.mkdir(parents=True, exist_ok=True)
-        local_path_str = str(local_path)
         pool = ThreadPoolExecutor(threads)
         futures = []
         for order, image_url in enumerate(images_list):
             remote_path = urlparse(image_url).path
             file_name = self.prepare_ordered_filename(remote_path, order)
-            futures.append(pool.submit(self.download_image, image_url, local_path_str, file_name))
+            futures.append(pool.submit(self.download_image, image_url, local_path, file_name))
         wait(futures)
 
 
@@ -94,7 +93,7 @@ class CreatorCbz(Creator):
 
     def zip_directory(self, path, img_dir, name):
         with ZipFile(str(Path(path, "{}.cbz".format(name))), 'w') as zip_file:
-            for file in os.listdir(str(Path(path, img_dir))):
+            for file in os.listdir(Path(path, img_dir)):
                 zip_file.write(Path(path, img_dir, file))
 
     def create(self, path, img_dir, name):
@@ -153,11 +152,11 @@ class ComicThief:
         else:
             print('Found nothing.')
 
-    def download_episode(self, episode_url, name):
-        subpage = self.fetcher.fetch_subpage(episode_url + '/full')
+    def download_episode(self, url, name):
+        subpage = self.fetcher.fetch_subpage(url + '/full')
         images_list = self.extractor.extract_images_list(subpage)
         self.fetcher.download_images_list(Path(self.cwd, self.output_dir, name, self.img_dir), images_list)
-        self.creator.create(str(Path(self.cwd, self.output_dir, name)), self.img_dir, name)
+        self.creator.create(Path(self.cwd, self.output_dir, name), self.img_dir, name)
         print('Episode downloaded.')
 
 #ct = ComicThief()
