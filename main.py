@@ -1,14 +1,15 @@
 # -*- coding:utf-8 -*-
 
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import namedtuple
 from pathlib import Path
 import os
 from urllib.parse import urlparse
 from zipfile import ZipFile
 
-import requests
 from lxml import html
+import requests
+from tqdm import tqdm
 
 from config import get_config, CONFIG, HTML_TEMPLATE
 
@@ -55,7 +56,11 @@ class Fetcher(Base):
             remote_path = urlparse(image_url).path
             file_name = self.prepare_ordered_filename(remote_path, order)
             futures.append(pool.submit(self.download_image, image_url, local_path, file_name))
-        wait(futures)
+
+        total = len(futures)
+        #TODO: zrozumiec jak dziala to as completed skad tdqm wie ze wykonano
+        for _ in tqdm(as_completed(futures), total=total):
+            pass
 
 
 class Extractor(Base):
@@ -158,6 +163,3 @@ class ComicThief:
         self.fetcher.download_images_list(Path(self.cwd, self.output_dir, name, self.img_dir), images_list)
         self.creator.create(Path(self.cwd, self.output_dir, name), self.img_dir, name)
         print('Episode downloaded.')
-
-#ct = ComicThief()
-#result = ct.search('Lobo')
