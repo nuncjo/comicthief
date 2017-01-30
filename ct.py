@@ -7,8 +7,7 @@ OPTIONS = [
     (('-s', '--search'), {'help': 'search'}),
     (('-xs', '--xsearch'), {'help': 'exact search to narrow more than one result'}),
     (('-d', '--download'), {'help': 'download'}),
-    (('-e', '--episode'),  {'help': 'choose episode', 'type': str}),
-    (('-o', '--output'), {'help': 'output format html. pdf, cbr'}),
+    (('-e', '--episode'),  {'help': 'choose episode', 'type': str})
 ]
 
 

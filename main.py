@@ -11,7 +11,8 @@ from lxml import html
 import requests
 from tqdm import tqdm
 
-from config import get_config, CONFIG, HTML_TEMPLATE
+from cache import pickle_cache
+from config import get_config, CONFIG
 
 
 def name_fits(search_phrase, key):
@@ -116,6 +117,7 @@ class ComicThief:
         self.output_dir = self.config['SETTINGS'].get('output_dir', 'comics')
         self.cwd = root_path or Path.cwd()
 
+    @pickle_cache(3600)
     def fetch_comics_dict(self):
         page = self.fetcher.fetch_comic_list_page()
         return self.creator.make_comics_dict(self.extractor.extract_comic_links(page))

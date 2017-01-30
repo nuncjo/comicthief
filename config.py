@@ -4,16 +4,6 @@ from configparser import ConfigParser
 
 CONFIG = 'default.ini'
 
-HTML_TEMPLATE = '''
-<!doctype html>
-<html lang="en">
-<head></head>
-<body>
-  <div>{}</div>
-</body>
-</html>
-'''
-
 
 class SingleConfig:
     """Singleton forcing that there is only one configuration instance used"""
