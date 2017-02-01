@@ -5,13 +5,14 @@ import shutil
 import unittest
 from pathlib import Path
 
-from .config import get_config, CONFIG
-from .main import (
-    Fetcher,
-    Extractor,
-    CreatorCbz,
-    ComicThief,
+from config import (
+    get_config,
+    CONFIG
 )
+from extractor import Extractor
+from fetcher import Fetcher
+from creator import CreatorCbz
+from main import ComicThief
 
 
 class TestAll(unittest.TestCase):

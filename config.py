@@ -5,6 +5,13 @@ from configparser import ConfigParser
 CONFIG = 'default.ini'
 
 
+class WithConfig:
+
+    def __init__(self):
+        self.config = get_config(CONFIG)
+        self.img_dir = self.config['SETTINGS'].get('img_dir', 'img')
+
+
 class SingleConfig:
     """Singleton forcing that there is only one configuration instance used"""
     class Config(ConfigParser):

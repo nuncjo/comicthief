@@ -6,7 +6,6 @@ from main import ComicThief
 OPTIONS = [
     (('-s', '--search'), {'help': 'search'}),
     (('-xs', '--xsearch'), {'help': 'exact search to narrow more than one result'}),
-    (('-d', '--download'), {'help': 'download'}),
     (('-e', '--episode'),  {'help': 'choose episode', 'type': str})
 ]
 
@@ -27,7 +26,7 @@ if __name__ == '__main__':
     add_arguments(parser)
     args = parser.parse_args()
     if args.search:
-        print('searching')
+        print('Searching..')
         results = ct.search(args.search)
         if results == 1 and args.episode:
             download_episode(args.episode)
@@ -35,3 +34,5 @@ if __name__ == '__main__':
         result = ct.exact_search(args.xsearch)
         if args.episode:
             download_episode(args.episode)
+    else:
+        print('Use -s (normal search) or -xs (exact search).')
