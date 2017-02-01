@@ -13,6 +13,12 @@ from config import WithConfig
 
 class Fetcher(WithConfig):
 
+    def __init__(self):
+        super().__init__()
+        self.headers = {
+            'user-agent': self.config['SETTINGS'].get('useragent', 'ComicThief')
+        }
+
     def fetch_comic_list_page(self, service='default'):
         return requests.get(self.config['COMICS_LIST'].get(service))
 
