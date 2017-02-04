@@ -60,7 +60,6 @@ class ComicThief:
     def exact_search(self, keyword):
         found = self.find_results(keyword, exact=True)
         if found.results_len == 1:
-            print('You should specify one of the episodes.')
             subpage = self.fetcher.fetch_subpage(self.get_first_result(found.results_dict))
             episodes = self.creator.make_comics_dict(self.extractor.extract_issues_list(subpage))
             print('\n'.join(episodes.keys()))

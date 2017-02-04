@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from configparser import ConfigParser
+from pathlib import Path
 
 CONFIG = 'default.ini'
 
@@ -32,4 +33,4 @@ class SingleConfig:
 
 def get_config(name):
     config = SingleConfig()
-    return config.get_config(name)
+    return config.get_config(str(Path(Path.cwd(), name)))

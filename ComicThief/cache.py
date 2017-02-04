@@ -57,6 +57,7 @@ def pickle_cache(seconds):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            Path(TMP_DIR).mkdir(parents=True, exist_ok=True)
             time_stamp = int(time.time())
             old_cache_file, valid = check_cache_validity(func.__name__, TMP_DIR, seconds, time_stamp)
             if valid:
