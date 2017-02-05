@@ -14,27 +14,27 @@ Download and install ComicThief by:
 Use as comand line utility:
 ----------------
 
-1) Copy *ct.py* wherever You want.
+Copy *ct.py* wherever You want.
 
-2) Search comic books.
+Search comic books.
 
 .. code-block:: bash
     $ python3 ct.py -s "Name"
 ..
 
-3) Type if there is more than one result. List of episodes will appear.
+Type if there is more than one result. List of episodes will appear.
 
 .. code-block:: bash
     $ python3 ct.py -xs "Exact name"
 ..
 
-4) Type to download selected episode.
+Type to download selected episode.
 
 .. code-block:: bash
     $ python3 ct.py -xs "Exact name" -e "Episode name #1"
 ..
 
-5) Go to "comics" directory, there it is!
+Go to "comics" directory, there it is!
 
 Use as library:
 ----------------
