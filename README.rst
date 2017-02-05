@@ -19,6 +19,7 @@ Copy *ct.py* wherever You want.
 Search comic books.
 
 .. code-block:: bash
+
     $ python3 ct.py -s "Name"
 
 Type if there is more than one result. List of episodes will appear.
