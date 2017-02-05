@@ -8,9 +8,7 @@ Downloads comics from `Readcomics.tv <http://www.readcomics.tv/>`_.
 Download and install ComicThief by:
 
 .. code-block:: bash
-
     $ python3 setup.py install -r requirements.txt
-..
 
 Use as comand line utility:
 ----------------
@@ -21,19 +19,16 @@ Search comic books.
 
 .. code-block:: bash
     $ python3 ct.py -s "Name"
-..
 
 Type if there is more than one result. List of episodes will appear.
 
 .. code-block:: bash
     $ python3 ct.py -xs "Exact name"
-..
 
 Type to download selected episode.
 
 .. code-block:: bash
     $ python3 ct.py -xs "Exact name" -e "Episode name #1"
-..
 
 Go to "comics" directory, there it is!
 
