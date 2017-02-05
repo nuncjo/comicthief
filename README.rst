@@ -25,11 +25,13 @@ Search comic books.
 Type if there is more than one result. List of episodes will appear.
 
 .. code-block:: bash
+
     $ python3 ct.py -xs "Exact name"
 
 Type to download selected episode.
 
 .. code-block:: bash
+
     $ python3 ct.py -xs "Exact name" -e "Episode name #1"
 
 Go to "comics" directory, there it is!
