@@ -20,17 +20,19 @@ Use as comand line utility:
 
 .. code-block:: bash
     $ python3 ct.py -s "Name"
+..
 
 3) Type if there is more than one result. List of episodes will appear.
 
 .. code-block:: bash
     $ python3 ct.py -xs "Exact name"
+..
 
 4) Type to download selected episode.
 
 .. code-block:: bash
     $ python3 ct.py -xs "Exact name" -e "Episode name #1"
-
+..
 
 5) Go to "comics" directory, there it is!
 
