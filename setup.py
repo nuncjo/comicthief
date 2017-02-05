@@ -11,7 +11,7 @@ with open('LICENSE') as f:
 
 setup(
     name='ComicThief',
-    version='0.1.1',
+    version='0.1.2',
     description='Comic Books Scraper. Easy download comics and make .cbz files.',
     long_description=readme,
     author='Nuncjo',
