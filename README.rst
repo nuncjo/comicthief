@@ -10,6 +10,7 @@ Download and install ComicThief by:
 .. code-block:: bash
 
     $ python3 setup.py install -r requirements.txt
+..
 
 Use as comand line utility:
 ----------------
