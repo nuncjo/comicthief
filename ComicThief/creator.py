@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 from zipfile import ZipFile
 
-from config import WithConfig
+from .config import WithConfig
 
 
 def name_fits(search_phrase, key):
@@ -31,8 +31,8 @@ class CreatorCbz(Creator):
 
     def zip_directory(self, path, img_dir, name):
         with ZipFile(str(Path(path, "{}.cbz".format(name))), 'w') as zip_file:
-            for file in os.listdir(Path(path, img_dir)):
-                zip_file.write(Path(path, img_dir, file))
+            for file in os.listdir(str(Path(path, img_dir))):
+                zip_file.write(str(Path(path, img_dir, file)))
 
     def create(self, path, img_dir, name):
         self.zip_directory(path, img_dir, name)

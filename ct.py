@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from argparse import ArgumentParser
-from main import ComicThief
+from ComicThief.main import ComicThief
 
 OPTIONS = [
     (('-s', '--search'), {'help': 'search'}),

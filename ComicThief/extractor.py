@@ -2,7 +2,7 @@
 
 from lxml import html
 
-from config import WithConfig
+from .config import WithConfig
 
 
 class Extractor(WithConfig):

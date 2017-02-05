@@ -5,14 +5,14 @@ import shutil
 import unittest
 from pathlib import Path
 
-from config import (
+from ComicThief.config import (
     get_config,
     CONFIG
 )
-from extractor import Extractor
-from fetcher import Fetcher
-from creator import CreatorCbz
-from main import ComicThief
+from ComicThief.extractor import Extractor
+from ComicThief.fetcher import Fetcher
+from ComicThief.creator import CreatorCbz
+from ComicThief.main import ComicThief
 
 
 class TestAll(unittest.TestCase):
@@ -71,7 +71,7 @@ class TestAll(unittest.TestCase):
                  self.episode_name,
                  self.img_dir),
             images_list)
-        completed_files = os.listdir(images_download_path)
+        completed_files = os.listdir(str(images_download_path))
 
         self.assertTrue(images_download_path.exists())
         self.assertGreaterEqual(len(completed_files), len(images_list))
@@ -91,7 +91,7 @@ class TestAll(unittest.TestCase):
 
     def tearDown(self):
         if self.test_cwd.exists():
-            shutil.rmtree(self.test_cwd)
+            shutil.rmtree(str(self.test_cwd))
 
 
 if __name__ == '__main__':

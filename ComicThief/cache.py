@@ -8,7 +8,7 @@ import os
 import re
 import time
 
-from config import get_config, CONFIG
+from .config import get_config, CONFIG
 
 config = get_config(CONFIG)
 TMP_DIR = config['SETTINGS'].get('tmp_dir', 'tmp')
@@ -21,7 +21,7 @@ def search_cached_file(name, tmp_dir):
     :param tmp_dir: str
     :return:
     """
-    for item in sorted(os.listdir(Path(tmp_dir)), reverse=True):
+    for item in sorted(os.listdir(str(Path(tmp_dir))), reverse=True):
         if name in item and item.endswith(".tmp"):
             return item
 
@@ -61,10 +61,10 @@ def pickle_cache(seconds):
             time_stamp = int(time.time())
             old_cache_file, valid = check_cache_validity(func.__name__, TMP_DIR, seconds, time_stamp)
             if valid:
-                with open(Path(TMP_DIR, old_cache_file), 'rb') as cache_file:
+                with open(str(Path(TMP_DIR, old_cache_file)), 'rb') as cache_file:
                     results = pickle.load(cache_file)
             else:
-                with open(Path(TMP_DIR, "{}-{}.tmp".format(func.__name__, time_stamp)), "wb") as new_cache_file:
+                with open(str(Path(TMP_DIR, "{}-{}.tmp".format(func.__name__, time_stamp))), "wb") as new_cache_file:
                     results = func(*args, **kwargs)
                     pickle.dump(results, new_cache_file, protocol=pickle.HIGHEST_PROTOCOL)
             return results

@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 import requests
 from tqdm import tqdm
 
-from config import WithConfig
+from .config import WithConfig
 
 
 class Fetcher(WithConfig):

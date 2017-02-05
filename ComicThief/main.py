@@ -3,15 +3,15 @@
 from collections import namedtuple
 from pathlib import Path
 
-from cache import pickle_cache
-from config import (
+from .cache import pickle_cache
+from .config import (
     get_config,
     CONFIG
 )
 
-from extractor import Extractor
-from fetcher import Fetcher
-from creator import CreatorCbz
+from .extractor import Extractor
+from .fetcher import Fetcher
+from .creator import CreatorCbz
 
 
 class ComicThief:
