@@ -23,18 +23,18 @@ Use as comand line utility:
 Use as library:
 ----------------
 
-```python
+.. code-block:: python
 
-from ComicThief.main import ComicThief
+    from ComicThief.main import ComicThief
 
-ct = ComicThief()
+    ct = ComicThief()
 
-result = ct.exact_search("Lobo")
+    result = ct.exact_search("Lobo")
 
-episode_url = result.get("Lobo #1")
+    episode_url = result.get("Lobo #1")
 
-if episode_url:
+    if episode_url:
 
-    ct.download_episode(episode_url, "Lobo #1")
+        ct.download_episode(episode_url, "Lobo #1")
+..
 
-```
