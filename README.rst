@@ -5,18 +5,32 @@ Comic Books Scraper. Easy download comics and make .cbz files.
 
 Downloads comics from `Readcomics.tv <http://www.readcomics.tv/>`_.
 
-Download and install ComicThief by *python3 setup.py install -r requirements.txt*
+Download and install ComicThief by:
+
+.. code-block:: bash
+
+    $ python3 setup.py install -r requirements.txt
 
 Use as comand line utility:
 ----------------
 
 1) Copy *ct.py* wherever You want.
 
-2) Type *python3 ct.py -s "Name"* to search comic books.
+2) Search comic books.
 
-3) Type *python3 ct.py -xs "Exact name"* if there is more than one result. List of episodes will appear.
+.. code-block:: bash
+    $ python3 ct.py -s "Name"
 
-4) Type *python3 ct.py -xs "Exact name" -e "Episode name #1"* to download selected episode.
+3) Type if there is more than one result. List of episodes will appear.
+
+.. code-block:: bash
+    $ python3 ct.py -xs "Exact name"
+
+4) Type to download selected episode.
+
+.. code-block:: bash
+    $ python3 ct.py -xs "Exact name" -e "Episode name #1"
+
 
 5) Go to "comics" directory, there it is!
 
