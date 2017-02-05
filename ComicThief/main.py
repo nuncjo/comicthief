@@ -6,8 +6,7 @@ from pathlib import Path
 from cache import pickle_cache
 from config import (
     get_config,
-    CONFIG,
-    WithConfig
+    CONFIG
 )
 
 from extractor import Extractor
