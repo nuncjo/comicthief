@@ -13,8 +13,7 @@ class Extractor(WithConfig):
 
     def extract_issues_list(self, page, service='default'):
         tree = html.fromstring(page.content)
-        x = tree.xpath(self.config['COMICS_SUBPAGE_XPATH'].get(service))
-        return x
+        return tree.xpath(self.config['COMICS_SUBPAGE_XPATH'].get(service))
 
     def extract_images_list(self, page, service='default'):
         tree = html.fromstring(page.content)
