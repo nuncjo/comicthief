@@ -1,8 +1,6 @@
 ComicThief
 ========================
 
-.. image:: https://codecov.io/gh/nuncjo/comicthief/branch/master/graph/badge.svg?branch=master
-  :target: https://codecov.io/github/nuncjo/comicthief
 
 
 .. image:: https://codecov.io/gh/nuncjo/comicthief/branch/master/graph/badge.svg?branch=master
