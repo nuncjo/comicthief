@@ -6,7 +6,7 @@ ComicThief
 
 
 .. image:: https://codecov.io/github/kennethreitz/requests/coverage.svg?branch=master
-    :target: https://codecov.io/github/kennethreitz/requests
+    :target: https://codecov.io/github/nuncjo/comicthief
     :alt: codecov.io
     
 
