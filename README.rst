@@ -5,7 +5,7 @@ ComicThief
   :target: https://codecov.io/github/nuncjo/comicthief
 
 
-.. image:: https://codecov.io/github/kennethreitz/requests/coverage.svg?branch=master
+.. image:: https://codecov.io/gh/nuncjo/comicthief/branch/master/graph/badge.svg?branch=master
     :target: https://codecov.io/github/nuncjo/comicthief
     :alt: codecov.io
     
