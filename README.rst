@@ -2,6 +2,7 @@ ComicThief
 ========================
 
 .. image:: https://codecov.io/gh/nuncjo/comicthief/branch/master/graph/badge.svg
+
   :target: https://codecov.io/gh/nuncjo/comicthief
 
 
