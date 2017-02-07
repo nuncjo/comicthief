@@ -5,6 +5,11 @@ ComicThief
   :target: https://codecov.io/gh/nuncjo/comicthief
 
 
+.. image:: https://codecov.io/github/kennethreitz/requests/coverage.svg?branch=master
+    :target: https://codecov.io/github/kennethreitz/requests
+    :alt: codecov.io
+    
+
 Comic Books Scraper. Easy download comics and make .cbz files.
 
 Downloads comics from `Readcomics.tv <http://www.readcomics.tv/>`_.
