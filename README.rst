@@ -1,10 +1,9 @@
 ComicThief
 ========================
 
-.. image:: https://codecov.io/gh/nuncjo/comicthief/branch/master/graph/badge.svg
-
-  :target: https://codecov.io/gh/nuncjo/comicthief
-
+.. image:: ttps://codecov.io/gh/nuncjo/comicthief/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/nuncjo/comicthief
+    :alt: codecov.io
 
 Comic Books Scraper. Easy download comics and make .cbz files.
 
