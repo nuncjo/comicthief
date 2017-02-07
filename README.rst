@@ -44,13 +44,10 @@ Use as library:
     from ComicThief.main import ComicThief
 
     ct = ComicThief()
-
     result = ct.exact_search("Lobo")
-
     episode_url = result.get("Lobo #1")
 
     if episode_url:
-
         ct.download_episode(episode_url, "Lobo #1")
 ..
 

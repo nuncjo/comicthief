@@ -11,7 +11,7 @@ with open('LICENSE') as f:
 
 setup(
     name='ComicThief',
-    version='0.1.6',
+    version='0.1.7',
     description='Comic Books Scraper. Easy download comics and make .cbz files.',
     long_description=readme,
     author='Nuncjo',
@@ -19,6 +19,6 @@ setup(
     url='https://github.com/nuncjo/comicthief',
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
-    package_data={'ComicThief': ['*.ini', 'ComicThief/*.ini']},
+    package_data={'ComicThief': ['*.ini']},
     include_package_data=True
 )

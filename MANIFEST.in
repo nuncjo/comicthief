@@ -1,2 +1,0 @@
-include README.rst LICENSE test.py requirements.txt
-include ComicThief/default.ini
