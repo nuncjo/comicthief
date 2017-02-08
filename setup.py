@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ComicThief',
-    version='0.1.9',
+    version='0.2.0',
     description='Comic Books Scraper. Easy download comics and make .cbz files.',
     long_description='',
     author='Nuncjo',
