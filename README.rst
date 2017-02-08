@@ -10,12 +10,16 @@ ComicThief
 
 Comic Books Scraper. Easy download comics and make .cbz files.
 
+Should work on Python versions 3.4+ on Linux and also on Windows/MacOS (but not tested yet).
+
 Downloads comics from `Readcomics.tv <http://www.readcomics.tv/>`_.
 
 Download and install ComicThief by:
 
 .. code-block:: bash
 
+    $ pip3 install ComicThief
+    or
     $ python3 setup.py install -r requirements.txt
 
 Use as comand line utility:
