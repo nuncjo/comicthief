@@ -67,6 +67,7 @@ class ComicThief:
             print('Found nothing.')
 
     def download_episode(self, url, name):
+        name = name.replace('/', '_')
         subpage = self.fetcher.fetch_subpage(url + '/full')
         images_list = self.extractor.extract_images_list(subpage)
         self.fetcher.download_images_list(Path(self.cwd, self.output_dir, name, self.img_dir), images_list)
